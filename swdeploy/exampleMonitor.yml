@@ -1,0 +1,9 @@
+# Monitor data goes under
+# /mon/deploy/
+time: iso
+shell_version: <version>
+# tag in influx
+host:
+  - time: iso
+  - name: fqdn
+  - status: [deploying | deployed | Error]

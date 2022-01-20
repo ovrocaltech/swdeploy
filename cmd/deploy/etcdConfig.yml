@@ -1,0 +1,4 @@
+# ETCD config file.
+# name
+endpoints: ["etcdv3service:2379"]
+timeout: "1s"

@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# deploy the deploy service and restart it.
+
+# lwa-shell must exist. clone it if it doesn't
+if [[ ! -e /home/ubuntu/projlwa-shell ]]; then
+    cd /home/ubuntu/proj
+    git clone https://github.com/ovro-lwa/lwa-shell.git
+    cd lwa-shell
+    git pull --tags
+    cd -
+fi
+
+# make sure .mrconfig_production is trusted
+TRUST=/home/ubuntu/.mrtrust
+if [[ ! -e $TRUST ]]; then
+    echo "/home/ubuntu/proj/lwa-shell/.mrconfig_production" > $TRUST
+else
+    grep .mrconfig_production $TRUST
+    if [[ $? != 0 ]]; then
+        echo "/home/ubuntu/proj/lwa-shell/.mrconfig_production" >> $TRUST
+    fi
+fi
+
+# install if needed and restart
+if [[ ! -e /etc/systemd/system/swdeploy.service ]]; then
+  sudo cp systemd/swdeploy.service /etc/systemd/system/
+  sudo enable swdeploy
+fi 
+sudo systemctl restart swdeploy

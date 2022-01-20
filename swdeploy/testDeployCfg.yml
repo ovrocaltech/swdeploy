@@ -1,0 +1,48 @@
+# Example YAML config used by deploy service running on each host. Typically,
+# a single host is configured to repspond to a single cmd. Here, this example
+# shows it responding to 2 cmds, gpu and wx. Each command represents 0 or more
+# repos and services that the host should deploy and restart respectively.
+# Each repo must have a script named deploy which contains instructions to
+# build if necessary and install the code. The service, should be a systemd
+# service which is handled via systemd's systemctl command. The deploy script
+# should handle inserting systemd service files into /etc/systemd/system/
+# setup.
+# The service will listen for the command(s) sepecified in this file and the
+# payload will be the version of the shell repo to checkout. It will checkout
+# the specified shell version and
+# change directory into each of the defined 'repo' listed and run the deploy
+# script. When all repos have been deployed, it will restart each service
+# in the 'service' list using 'systemctl restart <service>'.
+#
+# The web ui will contain 2 buttons. 'update', 'deploy'. The update button
+# will fetch the shell repo and repopulate the vesions drop-down as well as
+# fill in the current version deployed and the prev. version deployed. The
+# user can then select a version to deploy and hit the 'deploy' button.
+#
+# A table will show the status of each host as it reports its progress.
+cmd: 
+  gpu: 
+    shell_repo: 
+      /home/ubuntu/proj/lwa-shell: 
+        repos: 
+          - repo1
+          - repo2
+        services: 
+          - service1
+          - service2
+      /home/ubuntu/proj/ovrocaltech-shell: 
+        repos: 
+          - deploy-test-2
+          - deploy-test
+        services: 
+          - service-t1
+          - service-t2
+  wx:
+    shell_repo:
+      /home/ubuntu/proj/dsa110-shell:
+        repos: 
+          - repowx
+        services:
+          - wx
+myrepos_config: .mrconfig_production
+
