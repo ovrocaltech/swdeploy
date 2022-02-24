@@ -277,13 +277,14 @@ func listenAndServe() {
 		panic(err)
 	}
 	monData.Hostname = hostname
+	log.Printf("Listening for commands...")
+	monData.Status = "Listening"
+	writeMonitorData(monData)
+
 	for {
 		select {
 		case wresp := <-rch:
 			for _, ev := range wresp.Events {
-				log.Printf("Listening for commands...")
-				monData.Status = "Listening"
-				writeMonitorData(monData)
 
 				cmd := cmddxformat.CommandInterface{}
 				//log.Printf("CMD %s %q : %q\n", ev.Type, ev.Kv.Key, ev.Kv.Value)
