@@ -5,9 +5,9 @@ After=network-online.target
 
 [Service]
 User=ubuntu
-WorkingDirectory=/home/ubuntu/proj/lwa/deploy/cmd/swdeploy
-ExecStart=/home/ubuntu/proj/lwa/deploy/cmd/deploy/swdeploy
-ExecReload=/usr/bin/pkill -9 -f deploy && /home/ubuntu/proj/lwa/deploy/cmd/deploy/swdeploy
+WorkingDirectory=/home/ubuntu/proj/ovro/swdeploy/cmd/deploy
+ExecStart=/home/ubuntu/proj/ovro/swdeploy/cmd/deploy/swdeploy
+ExecReload=/usr/bin/pkill -9 -f deploy && /home/ubuntu/proj/ovro/swdeploy/cmd/deploy/swdeploy
 ExecStop=/usr/bin/pkill -9 -f swdeploy
 Restart=on-failure
 RestartSec=30

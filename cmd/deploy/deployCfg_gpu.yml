@@ -53,5 +53,4 @@ cmd:
         repos: 
           - lwa-pyutils
         services:
-          - swdeploy
 myrepos_config: .mrconfig_production

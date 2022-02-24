@@ -3,7 +3,7 @@
 # deploy the deploy service and restart it.
 
 # lwa-shell must exist. clone it if it doesn't
-if [[ ! -e /home/ubuntu/projlwa-shell ]]; then
+if [[ ! -e /home/ubuntu/proj/lwa-shell ]]; then
     cd /home/ubuntu/proj
     git clone https://github.com/ovro-lwa/lwa-shell.git
     cd lwa-shell

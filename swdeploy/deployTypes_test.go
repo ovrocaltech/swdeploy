@@ -7,19 +7,6 @@ import (
 	"testing"
 )
 
-func TestGetPreviousVersion(t *testing.T) {
-	prevVersion, err := getPrevVersion("testfn")
-	if err != nil {
-		fmt.Println("error getting previous version: ", err.Error())
-		t.Fail()
-	}
-	fmt.Println("prev. version= ", prevVersion)
-}
-
-func deployIt(r Repo, ver string) {
-	r.Deploy(ver)
-}
-
 func TestConfig(t *testing.T) {
 
 	/*
@@ -157,13 +144,6 @@ func TestConfig(t *testing.T) {
 	}
 }
 
-func TestDeploy(t *testing.T) {
-	var apc Repo
-	apc.Name = "lwa-shell"
-
-	deployIt(apc, "1.5.0")
-}
-
 func TestDeployConfig(t *testing.T) {
 	var dc DeployCmd
 	err := goutils.ReadYaml("testDeployCfg.yml", &dc)
@@ -181,7 +161,7 @@ func TestDeployConfig(t *testing.T) {
 					for _, repo := range target {
 						var apc Repo
 						apc.Name = repo
-						deployIt(apc, "1.5.0")
+						fmt.Println(apc.Name)
 					}
 				}
 			}
