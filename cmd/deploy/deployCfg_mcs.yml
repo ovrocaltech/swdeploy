@@ -54,5 +54,5 @@ cmd:
           - deploy-test
           - lwa-pyutils
         services:
-          - deploy
+          - lwaARXserial
 myrepos_config: .mrconfig_production
