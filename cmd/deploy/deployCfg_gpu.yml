@@ -50,7 +50,9 @@ cmd:
   gpu: 
     shell_repo: 
       /home/ubuntu/proj/lwa-shell: 
-        repos: 
+        repos:
+          - swdeploy
           - lwa-pyutils
         services:
+          - swdeploy
 myrepos_config: .mrconfig_production

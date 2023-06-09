@@ -51,8 +51,10 @@ cmd:
     shell_repo:
       /home/ubuntu/proj/lwa-shell:
         repos:
+          - swdeploy
           - deploy-test
           - lwa-pyutils
         services:
+          - swdeploy
           - lwaARXserial
 myrepos_config: .mrconfig_production
