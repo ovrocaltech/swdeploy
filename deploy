@@ -1,30 +1,41 @@
 #!/bin/bash
 
-# deploy the deploy service and restart it.
+# update and deploy the swdeploy application and service and restart it.
 
-# lwa-shell must exist. clone it if it doesn't
-if [[ ! -e /home/ubuntu/proj/lwa-shell ]]; then
-    cd /home/ubuntu/proj
-    git clone https://github.com/ovro-lwa/lwa-shell.git
-    cd lwa-shell
-    git pull --tags
-    cd -
-fi
+TAG=`git tag --points-at HEAD`
+REMOTE="nginxservice.lwa.pvt:/var/www/html/deployments"
+TARBALL="swdeploy_$TAG.tar.gz"
 
-# make sure .mrconfig_production is trusted
-TRUST=/home/ubuntu/.mrtrust
-if [[ ! -e $TRUST ]]; then
-    echo "/home/ubuntu/proj/lwa-shell/.mrconfig_production" > $TRUST
-else
-    grep .mrconfig_production $TRUST
-    if [[ $? != 0 ]]; then
-        echo "/home/ubuntu/proj/lwa-shell/.mrconfig_production" >> $TRUST
+function create_symlink() {
+    hn=`hostname`
+    if [[ -e deployCfg.yml ]]; then
+        rm -f deployCfg.yml
     fi
-fi
+    if [[ $hn =~ "mcs" ]]; then
+        ln -s deployCfg_mcs.yml deployCfg.yml
+    elif [[ $hn =~ "lwacr" ]]; then
+        ln -s deployCfg_cr.yml deployCfg.yml
+    elif [[ $hn =~ "gpu" ]]; then
+        ln -s deployCfg_gpu.yml deployCfg.yml
+    elif [[ $hn =~ "calim" ]]; then
+        ln -s deployCfg_calim.yml deployCfg.yml
+    fi
+}
 
-# install if needed and restart
-if [[ ! -e /etc/systemd/system/swdeploy.service ]]; then
-  sudo cp systemd/swdeploy.service /etc/systemd/system/
-  sudo enable swdeploy
-fi 
+mkdir -p /home/ubuntu/bin
+cd /home/ubuntu/bin
+if [[ -e $TARBALL ]]; then
+    rm $TARBALL
+fi
+wget --no-check-certificate $REMOTE/$TARBALL
+tar xf $TARBALL
+cd -
+cd /home/ubuntu/bin/deploy
+create_symlink
+cd -
+
+sudo cp systemd/swdeploy.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable swdeploy
 sudo systemctl restart swdeploy
+
