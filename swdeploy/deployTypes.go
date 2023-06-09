@@ -10,6 +10,8 @@ type Repo struct {
 	Name string
 }
 
+type HostTypes []string
+
 type DeployTypes struct {
 	// key = shell-repo path
 	ShellRepo map[string]DeployUnits `yaml:"shell_repo"`

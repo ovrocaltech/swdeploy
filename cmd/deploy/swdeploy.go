@@ -11,6 +11,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/syslog"
+	"os"
+	"os/exec"
+	"regexp"
+	"time"
+
 	cmddxformat "git.ovro.caltech.edu/sw/git/cmddxformat.git"
 	du "git.ovro.caltech.edu/sw/git/dsa110-goutils.git"
 	etcdaccess "git.ovro.caltech.edu/sw/git/etcdaccess.git/v2"
@@ -19,10 +25,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	logrus_syslog "github.com/sirupsen/logrus/hooks/syslog"
 	"github.com/soniakeys/meeus/v3/julian"
-	"log/syslog"
-	"os"
-	"os/exec"
-	"time"
 )
 
 const (
@@ -39,10 +41,11 @@ var (
 	// Version is the git version at build time
 	Version string
 	// Build is git hash at buid time
-	Build   string
-	ctxlog  *log.Entry
-	appName string
-	srvCfg  dt.DeployCmd
+	Build     string
+	ctxlog    *log.Entry
+	appName   string
+	srvCfg    dt.DeployCmd
+	hostTypes = dt.HostTypes{"mcs", "cr", "gpu", "calim"}
 )
 
 func init() {
@@ -68,6 +71,17 @@ func init() {
 		ctxlog.Error(emsg)
 		panic(0)
 	}
+}
+
+// GetHostType returns the type of host based on hostname
+// Known types are mcs, gpu, calim, cr
+func GetHostType(hn string) string {
+	for _, ht := range hostTypes {
+		if match, _ := regexp.MatchString(ht, hn); match == true {
+			return ht
+		}
+	}
+	return ""
 }
 
 func writeMonitorData(md dt.DeployMonitorData) {
@@ -96,11 +110,19 @@ func cloneRepo(repo string) error {
 }
 
 func getCurrentVersionSim(repo string) string {
-	fmt.Println("TODO: implement getCurrentVersion")
 	// get version of repo
 	// cd repo
 	return "v1.0.0"
 }
+
+/*
+func getCurrentVersion(repo string) (string, error) {
+	// git tag --points-at HEAD
+	cmd := exec.Command("cd", repo, "&&", "git", "tag", "--points-at", "HEAD")
+	version, err := cmd.Output()
+	return version, err
+}
+*/
 
 func restoreRepo() error {
 	cmd := exec.Command("git", "checkout", "--", ".")
@@ -277,6 +299,17 @@ func listenAndServe() {
 		panic(err)
 	}
 	monData.Hostname = hostname
+	hostType := GetHostType(hostname)
+	shellRepo := ""
+	if hostType != "" {
+		for sr, _ := range srvCfg.Cmd[hostType].ShellRepo {
+			shellRepo = sr
+			continue
+		}
+		if shellRepo != "" {
+			monData.DeployedVer = getCurrentVersion(shellRepo)
+		}
+	}
 	log.Printf("Listening for commands...")
 	monData.Status = "Listening"
 	writeMonitorData(monData)
