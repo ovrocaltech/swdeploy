@@ -3,7 +3,7 @@
 # update and deploy the swdeploy application and service and restart it.
 
 TAG=`git tag --points-at HEAD`
-REMOTE="nginxservice.lwa.pvt:/var/www/html/deployments"
+REMOTE="nginxservice.lwa.pvt:/deployments"
 TARBALL="swdeploy_$TAG.tar.gz"
 
 function create_symlink() {
