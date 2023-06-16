@@ -132,7 +132,8 @@ func restoreRepo() error {
 
 // deployRepo runs the deploy script in the repo given by its full path as rp.
 func deployRepo(rp string) error {
-	log.Println("Changing dir to: ", rp)
+	msg := fmt.Sprintf("Changing dir to: %s to run deploy", rp)
+	ctxlog.Info(msg)
 	// TODO: fill in monitor data with status DEPLOYING and write out.
 	err := os.Chdir(rp)
 	if err != nil {
@@ -183,7 +184,8 @@ func updateShellRepos(sp string) error {
 }
 
 func deployCode(repoPath string) error {
-	log.Println("Deploying repo: ", repoPath)
+	msg := fmt.Sprintf("Deploying repo: %s", repoPath)
+	ctxlog.Info(msg)
 	err := deployRepo(repoPath)
 	if err != nil {
 		ctxlog.Error(err.Error())
