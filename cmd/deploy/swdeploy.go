@@ -253,8 +253,8 @@ func checkoutShellAtVersion(shellRepo, currentShellVer, shellVer string,
 }
 
 func deployRepos(shellRepo string, repos []string, monData *dt.DeployMonitorData) {
-	for _, repo := range repos {
-		log.Println("deployRepos in shell: ", shellRepo)
+	for idx, repo := range repos {
+		log.Println("idx: ", idx, " deployRepos in shell: ", shellRepo, " repo: ", repo)
 		repoPath := shellRepo + "/" + repo
 		err := deployCode(repoPath)
 		if err != nil {
