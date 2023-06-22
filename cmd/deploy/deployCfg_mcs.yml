@@ -50,11 +50,12 @@ cmd:
   mcs:
     shell_repo:
       /home/ubuntu/proj/lwa-shell:
+# order matters. do swdeploy last
         repos:
-          - swdeploy
           - deploy-test
           - lwa-pyutils
-        services:
           - swdeploy
+        services:
           - lwaARXserial
+          - swdeploy
 myrepos_config: .mrconfig_production
