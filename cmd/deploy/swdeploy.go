@@ -270,8 +270,9 @@ func deployRepos(shellRepo string, repos []string, monData *dt.DeployMonitorData
 }
 
 func restartServices(services []string, monData *dt.DeployMonitorData) error {
-	for _, srv := range services {
-		log.Println("restarting service: ", srv)
+	for idx, srv := range services {
+		msg := fmt.Sprintf("%d, restarting service: %s", idx, srv)
+		ctxlog.Info(msg)
 		err := restartService(srv)
 		if err != nil {
 			ctxlog.Error(err.Error())
