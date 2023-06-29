@@ -37,5 +37,9 @@ cd -
 sudo cp systemd/swdeploy.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable swdeploy
-sudo systemctl restart swdeploy
+#
+# DO NOT RESTART HERE. The service does this at the very end.
+# No need to reorder which repos get updated. Howeverer, the
+# swdeploy service must be the last service listed in the config file.
+# sudo systemctl restart swdeploy
 
