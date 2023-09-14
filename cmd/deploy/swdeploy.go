@@ -11,7 +11,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log/syslog"
 	"os"
 	"os/exec"
 	"regexp"
@@ -23,7 +22,6 @@ import (
 	gw "git.ovro.caltech.edu/sw/git/gogitwrapper.git"
 	dt "github.com/ovrocaltech/swdeploy.git/swdeploy"
 	log "github.com/sirupsen/logrus"
-	logrus_syslog "github.com/sirupsen/logrus/hooks/syslog"
 	"github.com/soniakeys/meeus/v3/julian"
 )
 
@@ -51,13 +49,14 @@ var (
 func init() {
 	appName := "deploy"
 	log.SetFormatter(&log.JSONFormatter{})
-
-	hook, err := logrus_syslog.NewSyslogHook("tcp", "localhost:514", syslog.LOG_INFO, "")
-	if err != nil {
-		log.Error("Unable to connect to local syslog daemon")
-	} else {
-		log.AddHook(hook)
-	}
+	/*
+		hook, err := logrus_syslog.NewSyslogHook("tcp", "localhost:514", syslog.LOG_INFO, "")
+		if err != nil {
+			log.Error("Unable to connect to local syslog daemon")
+		} else {
+			log.AddHook(hook)
+		}
+	*/
 	standardFields := log.Fields{
 		"Version": Version,
 		"Build":   Build,
@@ -65,7 +64,7 @@ func init() {
 	}
 	ctxlog = log.WithFields(standardFields)
 
-	err = du.ReadYaml(serverConfigFilename, &srvCfg)
+	err := du.ReadYaml(serverConfigFilename, &srvCfg)
 	if err != nil {
 		emsg := fmt.Sprintf("Error reading %s\n", serverConfigFilename)
 		ctxlog.Error(emsg)
@@ -254,7 +253,8 @@ func checkoutShellAtVersion(shellRepo, currentShellVer, shellVer string,
 
 func deployRepos(shellRepo string, repos []string, monData *dt.DeployMonitorData) {
 	for idx, repo := range repos {
-		log.Println("idx: ", idx, " deployRepos in shell: ", shellRepo, " repo: ", repo)
+		msg := fmt.Sprintf("idx: %d, deployRepos in shell: %s, repo: %s", idx, shellRepo, repo)
+		ctxlog.Println(msg)
 		repoPath := shellRepo + "/" + repo
 		err := deployCode(repoPath)
 		if err != nil {
@@ -295,7 +295,7 @@ func restartService(srv string) error {
 
 func listenAndServe() {
 	rch := etcdaccess.Watch(ETCD_DEPLOY_KEY)
-	log.Println("Got etcd")
+	ctxlog.Info("Got etcd")
 	var monData dt.DeployMonitorData
 	hostname, err := os.Hostname()
 	if err != nil {
@@ -313,7 +313,7 @@ func listenAndServe() {
 			monData.DeployedVer = getCurrentVersion(shellRepo)
 		}
 	}
-	log.Printf("Listening for commands...")
+	ctxlog.Info("Listening for commands...")
 	monData.Status = "Listening"
 	writeMonitorData(monData)
 
@@ -328,7 +328,8 @@ func listenAndServe() {
 				if err != nil {
 					ctxlog.Error(err.Error())
 				}
-				log.Println("CMD ", cmd.Cmd)
+				msg := fmt.Sprintf("CMD %s", cmd.Cmd)
+				ctxlog.Info(msg)
 				switch cmd.Cmd {
 				case containsCmd(cmd.Cmd, srvCfg.Cmd):
 					shellVersion := cmd.Val.(string)

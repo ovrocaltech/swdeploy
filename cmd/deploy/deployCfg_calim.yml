@@ -51,6 +51,11 @@ cmd:
     shell_repo: 
       /home/ubuntu/proj/lwa-shell: 
         repos: 
+          - swdeploy
           - lwa-pyutils
+          - lwa-antpos
+          - mnc-python
+          - caltech-bifrost-dsp
         services:
+          - swdeploy
 myrepos_config: .mrconfig_production
